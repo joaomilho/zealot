@@ -103,7 +103,7 @@ go otherwise we'll have a Response.Error, with the following stuff:
 
 And we can deal with errors like this:
 
-```
+```js
 const {listen, on, ok, error} = require('.');
 ...
 

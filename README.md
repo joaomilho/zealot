@@ -14,7 +14,7 @@ mindset, while errors are not treated as exceptions – but _expected_ outcomes.
 Let's start with the hello world:
 
 ```js
-const {ok, on, listen} = require('@zealot/core')
+const {ok, on, listen} = require('zealot-core')
 
 on(ok.send('Hello'), listen(3000))
 ```
@@ -32,8 +32,8 @@ Now, let's see something slightly trickier. Let's imagine that we want to parse
 the request body and return it:
 
 ```js
-const {listen, on, ok} = require('@zealot/core');
-const {json} = require('@zealot/core/mid');
+const {listen, on, ok} = require('zealot-core');
+const {json} = require('zealot-core/mid');
 const flatMap = require('flyd/module/flatMap');
 const pipe = require('ramda/src/pipe')
 
@@ -139,7 +139,7 @@ compatibility code;
 ## Install
 
 ```sh
-yarn add @zealot/core
+yarn add zealot-core
 ```
 
 ## Status

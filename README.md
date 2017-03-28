@@ -141,3 +141,7 @@ compatibility code;
 ```sh
 yarn add @zealot/core
 ```
+
+## Status
+
+Extremely experimental.

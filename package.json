@@ -1,0 +1,14 @@
+{
+  "name": "@zealot/core",
+  "version": "0.0.1",
+  "main": "index.js",
+  "license": "MIT",
+  "author": "Juan Lulkin aka @joaomilho",
+  "url": "https://github.com/joaomilho/zealot",
+  "dependencies": {
+    "flyd": "^0.2.4",
+    "folktale": "^2.0.0-alpha3",
+    "ramda": "^0.19.1",
+    "raw-body": "^2.2.0"
+  }
+}

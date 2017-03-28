@@ -1,6 +1,6 @@
 # zealot
 
-Server as a function for Nodejs.
+Server as a function for Node.js
 
 ## What?
 

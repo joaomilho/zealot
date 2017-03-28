@@ -32,9 +32,9 @@ Now, let's see something slightly trickier. Let's imagine that we want to parse
 the request body and return it:
 
 ```js
-const {listen, on, ok} = require('.');
-const flatMap = require('flyd/module/flatMap');
+const {listen, on, ok} = require('@zealot/core');
 const {json} = require('@zealot/core/mid');
+const flatMap = require('flyd/module/flatMap');
 const pipe = require('ramda/src/pipe')
 
 pipe(

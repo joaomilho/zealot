@@ -1,0 +1,29 @@
+{
+  "name": "zealot-core",
+  "version": "0.0.2",
+  "main": "index.js",
+  "license": "MIT",
+  "author": "Juan Lulkin aka @joaomilho",
+  "url": "https://github.com/joaomilho/zealot",
+  "dependencies": {
+    "flyd": "^0.2.4",
+    "folktale": "^2.0.0-alpha3",
+    "path-to-regexp": "^1.7.0",
+    "ramda": "^0.19.1",
+    "raw-body": "^2.2.0",
+    "rimraf": "^2.6.1"
+  },
+  "devDependencies": {
+    "ava": "^0.18.2",
+    "gitbook-cli": "^2.3.0"
+  },
+  "scripts": {
+    "test": "ava *.test.js",
+    "docs:init": "gitbook init",
+    "docs:serve": "gitbook serve",
+    "docs:build": "gitbook build",
+    "docs:install": "gitbook install",
+    "docs:clean": "rimraf _book",
+    "docs:publish": "sh bin/gitbook"
+  }
+}

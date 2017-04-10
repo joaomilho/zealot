@@ -1,0 +1,410 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Errors · GitBook</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.2">
+        
+        
+        
+    
+    <link rel="stylesheet" href="../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    
+    <link rel="prev" href="middleware.html" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../">
+            
+                <a href="../">
+            
+                    
+                    Introduction
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="../intro.html">
+            
+                <a href="../intro.html">
+            
+                    
+                    Introduction
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="getting_started.html">
+            
+                <a href="getting_started.html">
+            
+                    
+                    Getting Started
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4" data-path="routing.html">
+            
+                <a href="routing.html">
+            
+                    
+                    Routing
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5" data-path="middleware.html">
+            
+                <a href="middleware.html">
+            
+                    
+                    Middleware
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.6" data-path="errors.html">
+            
+                <a href="errors.html">
+            
+                    
+                    Errors
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href=".." >Errors</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="errors">Errors</h1>
+<p>As Murphy puts it &quot;Anything that can go wrong, will go wrong&quot;. Therefore,
+treating errors as exceptions is not the zealot way. We model errors in the same
+kind of object we treat successes, that is, both are <code>Result</code>s. The only
+differences are that while a success is a Result.Ok, errors are wrapped in
+Result.Error and they&apos;ll include an <code>err</code> key in its value, so one can do
+something about it:</p>
+<pre><code class="lang-js">{
+  req: http.ClientRequest,
+  res: http.ServerResponse,
+  err: {
+    <span class="hljs-comment">// ... error stuff</span>
+  }
+}
+</code></pre>
+<h3 id="generating-errors">Generating errors</h3>
+<p>Let&apos;s imagine we wanna create a middleware than succeeds or fails randomly &#x2013;
+say, 50% of the time it succeeds, 50% it fails.</p>
+<pre><code class="lang-js"><span class="hljs-keyword">const</span> Result = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;folktale/data/result&apos;</span>)
+<span class="hljs-keyword">const</span> {merge, map, chain} = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;ramda&apos;</span>)
+
+<span class="hljs-keyword">const</span> failRandomly = () =&gt; map(chain((context) =&gt; {
+  <span class="hljs-keyword">return</span> <span class="hljs-built_in">Math</span>.random() &gt; <span class="hljs-number">0.5</span>
+    ? Result.Ok(context)
+    : Result.Error(merge(context, {err: <span class="hljs-string">&apos;random failure&apos;</span>}))
+}))
+
+<span class="hljs-built_in">module</span>.exports = failRandomly
+</code></pre>
+<p>For more details on how to create your own middleware,
+<a href="%27./middleware%27">read this</a>. All you need to understand here is what <code>map</code> and
+<code>chain</code> means and how to create the results. So <code>map</code> and <code>chain</code> will be used
+when you&apos;re doing something synchronous, but it may result in an error. That&apos;s
+because if you&apos;re doing something asynchronous you&apos;ll need to create a new
+stream, and therefore use flyd&apos;s <code>flatMap</code>. And <code>chain</code> is necessary because
+you want to replace the current result being passed with the one you just
+created.</p>
+<p>Finally, <code>Result.Ok</code> simply passes the current result with the current context
+down the stream, while <code>Result.Error</code> will pass down this context merged with a
+custom error. In our case, the string &apos;random failure&apos;.</p>
+<p>For learning purposes, here&apos;s the async version:</p>
+<pre><code class="lang-js"><span class="hljs-keyword">const</span> Result = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;folktale/data/result&apos;</span>)
+<span class="hljs-keyword">const</span> {merge, map, chain} = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;ramda&apos;</span>)
+<span class="hljs-keyword">const</span> { stream } = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;flyd&apos;</span>)
+<span class="hljs-keyword">const</span> flatMap = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;flyd/module/flatMap&apos;</span>)
+
+<span class="hljs-keyword">const</span> failRandomly = () =&gt; flatMap(chain((context) =&gt; {
+  <span class="hljs-keyword">const</span> $ = stream()
+  setTimeout(() =&gt; $(<span class="hljs-built_in">Math</span>.random() &gt; <span class="hljs-number">0.5</span>
+    ? Result.Ok(context)
+    : Result.Error(merge(context, {err: <span class="hljs-string">&apos;random failure&apos;</span>}))), <span class="hljs-number">1000</span>)
+  <span class="hljs-keyword">return</span> $
+}))
+
+<span class="hljs-built_in">module</span>.exports = failRandomly
+</code></pre>
+<p><cite>
+You may be finding odd to have to deal with streams instead of regular Promises
+and async/await stuff. Worry not, you can safely use Promises and then wrap them
+into streams with a little bit of <a href="https://github.com/paldepind/flyd#using-promises-for-asynchronous-operations" target="_blank">knowledge from flyd</a>.
+</cite></p>
+<p>Also, if you&apos;re finding this too verbose, you can always use some helpers:</p>
+<pre><code class="lang-js"><span class="hljs-keyword">const</span> {midSyncChain} = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;zealot-core/middleware&apos;</span>)
+
+<span class="hljs-keyword">const</span> failRandomly = midSyncChain(({Ok, <span class="hljs-built_in">Error</span>}, context) =&gt;
+  <span class="hljs-built_in">Math</span>.random() &gt; <span class="hljs-number">0.5</span> ? Ok(context) : <span class="hljs-built_in">Error</span>(merge(context, {err: <span class="hljs-string">&apos;random failure&apos;</span>})))
+</code></pre>
+<p>Or:</p>
+<pre><code class="lang-js"><span class="hljs-keyword">const</span> {midAsyncChain} = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;zealot-core/middleware&apos;</span>)
+
+<span class="hljs-keyword">const</span> failRandomly = midAsyncChain(($, {Ok, <span class="hljs-built_in">Error</span>}, context) =&gt;
+  setTimeout(() =&gt; {
+    $(<span class="hljs-built_in">Math</span>.random() &gt; <span class="hljs-number">0.5</span> ? Ok(context) : <span class="hljs-built_in">Error</span>(merge(context, {err: <span class="hljs-string">&apos;random failure&apos;</span>})))
+  }, <span class="hljs-number">1000</span>))
+</code></pre>
+<h3 id="dealing-with-errors">Dealing with errors</h3>
+<p>So using our shinny new middleware, we can do the following:</p>
+<pre><code class="lang-js"><span class="hljs-keyword">const</span> {listen, on} = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;zealot-core&apos;</span>)
+<span class="hljs-keyword">const</span> {pipe, map} = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;ramda&apos;</span>)
+
+pipe(
+  failRandomly(),
+  map((result) =&gt; result.map((context) =&gt; {
+    context.res.end(<span class="hljs-built_in">JSON</span>.stringify({ok: <span class="hljs-literal">true</span>}))
+  })),
+  map((result) =&gt; result.mapError((context) =&gt; {
+    context.res.end(<span class="hljs-built_in">JSON</span>.stringify({ok: <span class="hljs-literal">false</span>, err: context.err}))
+  }))
+)(listen(<span class="hljs-number">8080</span>))
+</code></pre>
+<p>So after executing our middleware we&apos;re doing two things. Their main difference
+is that in the first one, we&apos;re doing <code>result.map</code> and in the second one we&apos;re
+doing <code>result.mapError</code>. As expected, <code>map</code> operates only when the
+current result is <code>Ok</code>, while <code>mapError</code> operates only when the current result
+is <code>Error</code>. Therefore, this two blocks are mutually exclusive, and, given our
+middleware logic, they&apos;ll be executed only ~50% of the time each.</p>
+<p>In both cases we&apos;re invoking <code>context.res.end</code>, which is <code>http</code>&apos;s
+low level function to return something to the client, but in the case of error
+we&apos;re also returning the error string. Now, if you run a <code>curl</code> on that, you&apos;ll
+get something like:</p>
+<pre><code class="lang-sh">$ curl http://localhost:8080
+{<span class="hljs-string">&quot;ok&quot;</span>:<span class="hljs-literal">true</span>}
+$ curl http://localhost:8080
+{<span class="hljs-string">&quot;ok&quot;</span>:<span class="hljs-literal">false</span>,<span class="hljs-string">&quot;error&quot;</span>:<span class="hljs-string">&quot;random failure&quot;</span>}
+</code></pre>
+<p>Note this is the case <em>regardless</em> if the middleware is sync or async.</p>
+<p>But zealot comes with a couple of helpers to make this a little bit both
+verbose, even though it&apos;s super important you understand how they work:</p>
+<pre><code class="lang-js"><span class="hljs-keyword">const</span> {listen, on, ok, error} = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;zealot-core&apos;</span>)
+<span class="hljs-keyword">const</span> {pipe} = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;ramda&apos;</span>)
+
+pipe(
+  failRandomly(),
+  map(ok.sendJSON({ok: <span class="hljs-literal">true</span>})),
+  map(error.sendJSONWith(({err}) =&gt; ({ok: <span class="hljs-literal">false</span>, err})))
+)(listen(<span class="hljs-number">8080</span>))
+</code></pre>
+<p><cite>
+This system assumes you only care about one error. If you think you care about
+many, maybe what you want is to use the <a href="http://origamitower.github.io/folktale/api/en/folktale.data.validation.html" target="_blank">Validation</a>
+data type instead of Result.
+</cite></p>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="middleware.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page: Middleware">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"Errors","level":"1.6","depth":1,"previous":{"title":"Middleware","level":"1.5","depth":1,"path":"docs/middleware.md","ref":"docs/middleware.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":[],"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"docs/errors.md","mtime":"2017-04-04T09:14:00.000Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2017-04-10T21:39:56.766Z"},"basePath":"..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../gitbook/gitbook.js"></script>
+    <script src="../gitbook/theme.js"></script>
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+

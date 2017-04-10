@@ -1,0 +1,11 @@
+#!/bin/bash
+
+yarn run docs:clean && \
+yarn run docs:build && \
+cd _book && \
+git init && \
+git commit --allow-empty -m 'update docs' && \
+git checkout -b gh-pages && \
+git add . && \
+git commit -am 'update docs' && \
+git push git@github.com:joaomilho/zealor gh-pages --force

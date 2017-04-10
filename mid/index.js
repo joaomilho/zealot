@@ -1,3 +1,4 @@
 module.exports = {
-  json: require('./json')
+  json: require('./json'),
+  recoverWith: require('./recoverWith')
 }

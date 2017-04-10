@@ -7,11 +7,12 @@ const hasBody = (req) =>
   req.headers['transfer-encoding'] !== undefined ||
     !isNaN(req.headers['content-length'])
 
-const read = ({req, res, mid}, parse, key) => {
+const read = (parse, key) => ({req, res, mid}) => {
   const $ = stream()
 
   if (!hasBody(req)) {
-    return $(Result.Error({ req, res, mid }))
+    // return $(Result.Error({ req, res, mid }))
+    return $(Result.of({ req, res, mid: merge(mid, { [key]: {} }) }))
   }
 
   getBody(req, (error, body) => {
@@ -24,6 +25,7 @@ const read = ({req, res, mid}, parse, key) => {
     try {
       $(Result.of({ req, res, mid: merge(mid, { [key]: parse(body) }) }))
     } catch (error) {
+      throw error
       error.body = body
 
       setErrStatus(error, 400)

@@ -1,15 +1,16 @@
-const always = require('ramda/src/always')
-const pipe = require('ramda/src/pipe')
+const {curry} = require('ramda')
 
-const sendWith = (fn) => (value) =>
-  value.res.end(fn(value))
+const sendWith = curry((fn, context) =>
+  context.res.end(fn(context)))
 
-const send = pipe(always, sendWith)
+const send = curry((text, {res}) =>
+  res.end(text))
 
-const sendJSONWith = (fn) => (value) => {
-  value.res.end(JSON.stringify(fn(value)))
-}
+const sendJSONWith = curry((fn, context) => {
+  context.res.end(JSON.stringify(fn(context)))
+})
 
-const sendJSON = pipe(always, sendJSONWith)
+const sendJSON = curry((json, {res}) =>
+  res.end(JSON.stringify(json)))
 
 module.exports = { send, sendJSON, sendWith, sendJSONWith }

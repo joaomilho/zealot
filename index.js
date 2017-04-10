@@ -2,6 +2,7 @@ const http = require('http')
 const {on, stream} = require('flyd')
 const Result = require('folktale/data/result')
 const ok = require('./ok')
+const error = require('./error')
 
 const listen = (port, msg = `Listening to ${port}...`) => {
   const $ = stream()
@@ -13,4 +14,4 @@ const listen = (port, msg = `Listening to ${port}...`) => {
   return $
 };
 
-module.exports = {listen, on, ok};
+module.exports = {listen, on, ok, error};

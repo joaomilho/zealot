@@ -1,6 +1,6 @@
 {
   "name": "zealot-core",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "index.js",
   "license": "MIT",
   "author": "Juan Lulkin aka @joaomilho",
@@ -10,7 +10,8 @@
     "folktale": "^2.0.0-alpha3",
     "path-to-regexp": "^1.7.0",
     "ramda": "^0.19.1",
-    "raw-body": "^2.2.0"
+    "raw-body": "^2.2.0",
+    "rimraf": "^2.6.1"
   },
   "devDependencies": {
     "ava": "^0.18.2",

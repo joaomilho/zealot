@@ -4,98 +4,104 @@
  * This module exports a couple of functions useful to create routes.
  */
 
-const {toLower, map, pipe, split, filter, keys} = require('ramda')
-const r = require('../result');
+const { toLower, map, pipe, split, filter, keys } = require('ramda');
+const r = require('zealot-core/result');
 
-const pathToRegexp = require('path-to-regexp')
+const pathToRegexp = require('path-to-regexp');
 
 const compilePath = (pattern, options) => {
-  const keys = []
-  const re = pathToRegexp(pattern, keys) //, options
-  const compiledPattern = { re, keys }
+  const keys = [];
+  const re = pathToRegexp(pattern, keys); //, options
+  const compiledPattern = { re, keys };
 
-  return compiledPattern
-}
+  return compiledPattern;
+};
 
 const matchPath = (path, currentPath) => {
-  const { re, keys } = compilePath(path, { end: false, strict: false })
-  const match = re.exec(currentPath)
+  const { re, keys } = compilePath(path, { end: false, strict: false });
+  const match = re.exec(currentPath);
 
-  if (!match)
-    return null
+  if (!match) return null;
 
-  const [ url, ...values ] = match
+  const [url, ...values] = match;
 
-  return keys.reduce((memo, key, index) => {
-    memo[key.name] = values[index]
-    return memo
-  }, {})
+  return keys.reduce(
+    (memo, key, index) => {
+      memo[key.name] = values[index];
+      return memo;
+    },
+    {}
+  );
+};
 
-}
+const match = req =>
+  ([method, path]) => {
+    return (method === '*' || toLower(req.method) === toLower(method)) && matchPath(path, req.url);
+  };
 
-const match = (req) => ([method, path]) => {
-  return (method === '*' || toLower(req.method) === toLower(method)) &&
-    matchPath(path, req.url)
-}
+const routify = (name, topic) =>
+  map(
+    key => {
+      switch (key) {
+        case 'all':
+          return ['get', `/${name}`, topic.all];
+        case 'get':
+          return ['get', `/${name}/:id`, topic.get];
+        case 'create':
+          return ['post', `/${name}`, topic.create];
+        case 'update':
+          return ['put', `/${name}/:id`, topic.update];
+        case 'delete':
+          return ['delete', `/${name}/:id`, topic.delete];
+      }
+    },
+    keys(topic)
+  );
 
-
-const routify = (name, topic) => map((key) => {
-  switch(key){
-    case 'all':
-      return ['get', `/${name}`, topic.all]
-    case 'get':
-      return ['get', `/${name}/:id`, topic.get]
-    case 'create':
-      return ['post', `/${name}`, topic.create]
-    case 'update':
-      return ['put', `/${name}/:id`, topic.update]
-    case 'delete':
-      return ['delete', `/${name}/:id`, topic.delete]
-  }
-}, keys(topic))
-
-
-const restify = (resource) => ({
-  all: (context) => {
-    resource.all.then(items => {
-      r.sendJSON(items, context)
-    })
+const restify = resource => ({
+  all: context => {
+    resource.all().then(items => {
+      r.sendJSON(items, context);
+    });
   },
-  get: (context, {id}) => {
+  get: (context, { id }) => {
     return resource.get(id).then(item => {
-      return r.sendJSON(item ? item : {not: 'found'}, context)
-    })
+      return item ? r.sendJSON(item, context) : r.sendJSON({}, context);
+    });
   },
-  create: (context) => {
+  create: context => {
     resource.create(context.mid.body).then(ok => {
-      r.sendJSON({ok}, context)
-    })
+      r.sendJSON({ ok }, context);
+    });
   },
-  update: (context, {id}) => {
+  update: (context, { id }) => {
     resource.update(id, context.mid.body).then(ok => {
-      r.sendJSON({ok}, context)
-    })
+      r.sendJSON({ ok }, context);
+    });
   },
-  delete: (context, {id}) => {
+  delete: (context, { id }) => {
+    console.log('DELETING ID: ', id, resource.delete);
     resource.delete(id).then(ok => {
-      r.sendJSON({ok}, context)
+      r.sendJSON({ ok }, context);
+    });
+  },
+});
+
+const route = rs =>
+  map(
+    map(context => {
+      const matchReq = match(context.req);
+      return rs.find(([method, path, response]) => {
+        const params = matchReq([method, path]);
+        if (params) {
+          response(context, params);
+          return true;
+        }
+        return false;
+      });
     })
-  }
-})
+  );
 
-const route = (rs) => map(map((context) => {
-  const matchReq = match(context.req)
-  return rs.find(([method, path, response]) => {
-    const params = matchReq([method, path])
-    if (params) {
-      response(context, params)
-      return true
-    }
-    return false
-  })
-}))
+const crud = (name, topic) => routify(name, restify(topic));
 
-
-const crud = (name, topic) => routify(name, restify(topic))
-
-module.exports = {route, routify, restify, crud, result: r}
+module.exports = { route, routify, restify, crud, result: r };
